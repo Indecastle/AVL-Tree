@@ -14,7 +14,7 @@ class AVLTree
 private:
 	unsigned char height(node* p);
 	int bfactor(node* p);
-	void Fixheight(node* p);
+	void fixheight(node* p);
 	node* rotateright(node* p); // правый поворот вокруг p
 	node* rotateleft(node* q); // левый поворот вокруг q
 	node* balance(node* p); // балансировка узла p
