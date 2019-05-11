@@ -1,5 +1,3 @@
-#pragma once
-
 struct node // структура для представления узлов дерева
 {
 	int key;
@@ -12,6 +10,8 @@ struct node // структура для представления узлов дерева
 class AVLTree
 {
 private:
+	node* root;
+
 	unsigned char height(node* p);
 	int bfactor(node* p);
 	void fixheight(node* p);
@@ -21,7 +21,14 @@ private:
 	node* findmin(node* p); // поиск узла с минимальным ключом в дереве 
 	node* removemin(node* p); // удаление узла с минимальным ключом из дерева p
 
+	bool _iscontain(node* p, int k); // проверка на содержимое ключа k из дерева p
+	node* _insert(node* p, int k); // вставка ключа k в дерево с корнем p
+	node* _remove(node* p, int k); // удаление ключа k из дерева p
+
 public:
-	node* insert(node* p, int k); // вставка ключа k в дерево с корнем p
-	node* remove(node* p, int k); // удаление ключа k из дерева p
+	AVLTree();
+	AVLTree(int k);
+	bool iscontain(int k); // проверка на содержимое ключа k
+	void insert(int k); // вставка ключа k в дерево
+	void remove(int k); // удаление ключа k
 };

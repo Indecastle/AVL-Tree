@@ -1,12 +1,10 @@
+#include "pch.h"
+#include <iostream>
 #include "Tree.h"
-struct node // структура для представления узлов дерева
-{
-	int key;
-	unsigned char height;
-	node* left;
-	node* right;
-	node(int k) { key = k; left = right = 0; height = 1; }
-};
+using namespace std;
+
+AVLTree::AVLTree() {}
+AVLTree::AVLTree(int k) { insert(k); }
 
 unsigned char AVLTree::height(node* p)
 {
@@ -63,13 +61,13 @@ node* AVLTree::balance(node* p) // балансировка узла p
 	return p; // балансировка не нужна
 }
 
-node* AVLTree::insert(node* p, int k) // вставка ключа k в дерево с корнем p
+node* AVLTree::_insert(node* p, int k) // вставка ключа k в дерево с корнем p
 {
 	if (!p) return new node(k);
 	if (k < p->key)
-		p->left = insert(p->left, k);
+		p->left = _insert(p->left, k);
 	else
-		p->right = insert(p->right, k);
+		p->right = _insert(p->right, k);
 	return balance(p);
 }
 
@@ -86,13 +84,13 @@ node* AVLTree::removemin(node* p) // удаление узла с минимальным ключом из дерев
 	return balance(p);
 }
 
-node* AVLTree::remove(node* p, int k) // удаление ключа k из дерева p
+node* AVLTree::_remove(node* p, int k) // удаление ключа k из дерева p
 {
 	if (!p) return 0;
 	if (k < p->key)
-		p->left = remove(p->left, k);
+		p->left = _remove(p->left, k);
 	else if (k > p->key)
-		p->right = remove(p->right, k);
+		p->right = _remove(p->right, k);
 	else //  k == p->key 
 	{
 		node* q = p->left;
@@ -105,4 +103,33 @@ node* AVLTree::remove(node* p, int k) // удаление ключа k из дерева p
 		return balance(min);
 	}
 	return balance(p);
+}
+
+bool AVLTree::_iscontain(node * p, int k) // проверка на содержимое ключа k из дерева p
+{
+	if (p == nullptr) return false;
+	if (k < p->key)
+		return _iscontain(p->left, k);
+	else if (k > p->key)
+		return _iscontain(p->right, k);
+	else //  k == p->key 
+	{
+		return true;
+	}
+}
+
+
+bool AVLTree::iscontain(int k) // проверка на содержимое ключа k
+{
+	return _iscontain(root, k);
+}
+
+void AVLTree::insert(int k) // вставка ключа k в дерево
+{
+	root = _insert(root, k);
+}
+
+void AVLTree::remove(int k) // удаление ключа k
+{
+	root = _remove(root, k);
 }
