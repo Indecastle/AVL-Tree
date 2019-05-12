@@ -1,5 +1,4 @@
 #include "pch.h"
-#include <iostream>
 #include "Tree.h"
 using namespace std;
 
@@ -11,12 +10,12 @@ unsigned char AVLTree::height(node* p)
 	return p ? p->height : 0;
 }
 
-int AVLTree::bfactor(node* p)
+int AVLTree::diff(node* p)
 {
 	return height(p->right) - height(p->left);
 }
 
-void AVLTree::fixheight(node* p)
+void AVLTree::fix_height(node* p)
 {
 	unsigned char hl = height(p->left);
 	unsigned char hr = height(p->right);
@@ -28,8 +27,8 @@ node* AVLTree::rotateright(node* p) // правый поворот вокруг p
 	node* q = p->left;
 	p->left = q->right;
 	q->right = p;
-	fixheight(p);
-	fixheight(q);
+	fix_height(p);
+	fix_height(q);
 	return q;
 }
 
@@ -38,27 +37,27 @@ node* AVLTree::rotateleft(node* q) // левый поворот вокруг q
 	node* p = q->right;
 	q->right = p->left;
 	p->left = q;
-	fixheight(q);
-	fixheight(p);
+	fix_height(q);
+	fix_height(p);
 	return p;
 }
 
 node* AVLTree::balance(node* p) // балансировка узла p
 {
-	fixheight(p);
-	if (bfactor(p) == 2)
+	fix_height(p);
+	if (diff(p) == 2)
 	{
-		if (bfactor(p->right) < 0)
+		if (diff(p->right) < 0)
 			p->right = rotateright(p->right);
 		return rotateleft(p);
 	}
-	if (bfactor(p) == -2)
+	if (diff(p) == -2)
 	{
-		if (bfactor(p->left) > 0)
+		if (diff(p->left) > 0)
 			p->left = rotateleft(p->left);
 		return rotateright(p);
 	}
-	return p; // балансировка не нужна
+	return p;
 }
 
 node* AVLTree::_insert(node* p, int k) // вставка ключа k в дерево с корнем p
@@ -71,22 +70,18 @@ node* AVLTree::_insert(node* p, int k) // вставка ключа k в дерево с корнем p
 	return balance(p);
 }
 
-node* AVLTree::findmin(node* p) // поиск узла с минимальным ключом в дереве p 
+pair<node*, node*> AVLTree::removemin(node* p) // удаление узла с минимальным ключом из дерева p
 {
-	return p->left ? findmin(p->left) : p;
-}
-
-node* AVLTree::removemin(node* p) // удаление узла с минимальным ключом из дерева p
-{
-	if (p->left == 0)
-		return p->right;
-	p->left = removemin(p->left);
-	return balance(p);
+	if (p->left == nullptr)
+		return { p->right, p };
+	auto tuple = removemin(p->left);
+	p->left = tuple.first;
+	return { balance(p), tuple.second };
 }
 
 node* AVLTree::_remove(node* p, int k) // удаление ключа k из дерева p
 {
-	if (!p) return 0;
+	if (!p) return nullptr;
 	if (k < p->key)
 		p->left = _remove(p->left, k);
 	else if (k > p->key)
@@ -97,29 +92,30 @@ node* AVLTree::_remove(node* p, int k) // удаление ключа k из дерева p
 		node* r = p->right;
 		delete p;
 		if (!r) return q;
-		node* min = findmin(r);
-		min->right = removemin(r);
+		auto tuple = removemin(r);
+		node* min = tuple.second;
+		min->right = tuple.first;
 		min->left = q;
 		return balance(min);
 	}
 	return balance(p);
 }
 
-bool AVLTree::_iscontain(node * p, int k) // проверка на содержимое ключа k из дерева p
+node* AVLTree::_iscontain(node * p, int k) // проверка на содержимое ключа k из дерева p
 {
-	if (p == nullptr) return false;
+	if (p == nullptr) return nullptr;
 	if (k < p->key)
 		return _iscontain(p->left, k);
 	else if (k > p->key)
 		return _iscontain(p->right, k);
 	else //  k == p->key 
 	{
-		return true;
+		return p;
 	}
 }
 
 
-bool AVLTree::iscontain(int k) // проверка на содержимое ключа k
+node* AVLTree::iscontain(int k) // проверка на содержимое ключа k
 {
 	return _iscontain(root, k);
 }

@@ -9,9 +9,14 @@ int main()
 
 	AVLTree tree(1);
 	tree.insert(5);
-	cout << tree.iscontain(5) << endl;
+	for (int i = 0; i < 100000; i++) {
+		tree.insert(i);
+	}
+	cout << (bool)tree.iscontain(5) << endl;
 	tree.remove(5);
-	cout << tree.iscontain(5) << endl;
+	cout << (bool)tree.iscontain(5) << endl;
+	tree.remove(5);
+	cout << (bool)tree.iscontain(5) << endl;
 
 	return 0;
 }
